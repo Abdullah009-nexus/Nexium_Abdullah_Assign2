@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Creamy white background */
+body {
+  @apply min-h-screen;
+  background-color: #fffaf0;
+  color: black;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Cosmic shooting star */
+.shooting-star {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: black;
+  border-radius: 50%;
+  box-shadow: 0 0 8px black;
+  opacity: 0;
+  animation: twinkle 4s ease-in-out infinite, cosmic-burst 20s linear forwards;
+}
+
+/* Twinkle (slow fade in-out) */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* Star movement: center → scatter in random direction */
+@keyframes cosmic-burst {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
