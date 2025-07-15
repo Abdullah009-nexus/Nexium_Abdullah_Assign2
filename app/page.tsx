@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/ui/Navbar';
-import { scrapeBlog } from '@/lib/scrapeBlog';
 import { supabase } from '@/lib/supabase';
-import { saveToMongo } from '@/lib/mongodb';
 
 interface Star {
   id: number;
@@ -22,7 +20,6 @@ export default function Home() {
   const [stars, setStars] = useState<Star[]>([]);
   const [counter, setCounter] = useState(0);
 
-  // ✨ Stars from center
   useEffect(() => {
     const interval = setInterval(() => {
       const numStars = 1 + Math.floor(Math.random() * 2);
@@ -38,15 +35,9 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [counter]);
 
-  const handleSummarize = async () => {
-    if (!url) return alert('Please enter a valid URL');
-
-    const fullText = await scrapeBlog(url);
-    if (!fullText) return alert('Failed to extract blog content.');
-
-    await saveToMongo(url, fullText);
-
+  const handleSummarize = () => {
     const fakeSummary = 'Stay productive remotely: manage time, use tools, take breaks.';
+
     setSummary(fakeSummary);
 
     const dictionary: { [key: string]: string } = {
@@ -67,12 +58,12 @@ export default function Home() {
       .join(' ');
 
     setUrduSummary(translated);
-    await saveToSupabase(url, fakeSummary, translated);
+
+    saveToSupabase(url, fakeSummary, translated);
   };
 
   return (
     <>
-      {/* Stars visual */}
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
         {stars.map((star) => (
           <div
@@ -90,20 +81,31 @@ export default function Home() {
 
       <Navbar />
 
-      <main className="relative z-10 p-4 max-w-2xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center">Blog Summariser</h1>
+      <main className="relative z-10 flex flex-col items-center justify-center h-screen p-4 max-w-2xl mx-auto space-y-6">
+
+        {/* Solid Black Title */}
+        <h1 className="text-4xl font-bold text-center text-black drop-shadow-lg">
+          Blog Summariser
+        </h1>
 
         <Input
           type="url"
           placeholder="Paste blog URL here..."
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          className="w-full max-w-lg border-gray-300 shadow-lg"
         />
 
-        <Button onClick={handleSummarize}>Summarize Blog</Button>
+        {/* Black Button */}
+        <Button
+          onClick={handleSummarize}
+          className="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-lg shadow-xl transition-all duration-300"
+        >
+          Summarize Blog
+        </Button>
 
         {summary && (
-          <div className="bg-white text-black rounded-lg p-4 space-y-4 shadow">
+          <div className="bg-white text-black rounded-lg p-4 space-y-4 shadow-lg w-full max-w-lg">
             <div>
               <h2 className="font-semibold text-lg">AI Summary:</h2>
               <p>{summary}</p>
@@ -128,6 +130,6 @@ const saveToSupabase = async (url: string, summary: string, urdu: string) => {
   if (error) {
     console.error('Error saving to Supabase:', error);
   } else {
-    console.log('Saved to Supabase:', data);
+    console.log('Saved successfully:', data);
   }
 };

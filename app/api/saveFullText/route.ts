@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 
-const uri = "mongodb+srv://abdullah:passwordname009@cluster0.tkq50g3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = process.env.MONGODB_URI!;
 const dbName = "blogSummarizerDB";
 
 export async function POST(req: Request) {
@@ -24,6 +24,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, id: result.insertedId });
   } catch (err) {
     console.error("MongoDB Save Error:", err);
-    return NextResponse.json({ success: false, error: err }, { status: 500 });
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
   }
 }
